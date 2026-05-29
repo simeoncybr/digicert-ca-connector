@@ -77,18 +77,15 @@ func RegisterHandlers(e *echo.Echo, whService WebhookService) error {
 func addPayloadEncryptionMiddleware(g *echo.Group) {
 	privateKeyPemData, err := os.ReadFile("/keys/payload-encryption-key.pem")
 	if err != nil {
-		zap.L().Error("payload encryption key not found or readable", zap.Error(err))
-		return
+		zap.L().Fatal("payload encryption key not found or readable", zap.Error(err))
 	}
 	p, _ := pem.Decode(privateKeyPemData)
 	if p == nil {
-		zap.L().Error("payload encryption key not in PEM format")
-		return
+		zap.L().Fatal("payload encryption key not in PEM format")
 	}
 	pk, err := x509.ParsePKCS1PrivateKey(p.Bytes)
 	if err != nil {
-		zap.L().Error("payload encryption key not properly encoded", zap.Error(err))
-		return
+		zap.L().Fatal("payload encryption key not properly encoded", zap.Error(err))
 	}
 	zap.L().Info("adding payload encryption middleware")
 	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -96,15 +93,15 @@ func addPayloadEncryptionMiddleware(g *echo.Group) {
 			req := c.Request()
 			body, err := ioutil.ReadAll(req.Body)
 			if err != nil {
-				return err
+				return echo.NewHTTPError(http.StatusUnauthorized, "failed to read request body")
 			}
 			object, err := jose.ParseEncrypted(string(body))
 			if err != nil {
-				return err
+				return echo.NewHTTPError(http.StatusUnauthorized, "invalid encrypted payload")
 			}
 			decrypted, err := object.Decrypt(pk)
 			if err != nil {
-				return err
+				return echo.NewHTTPError(http.StatusUnauthorized, "decryption failed")
 			}
 			req.Body = io.NopCloser(bytes.NewReader(decrypted))
 			return next(c)
