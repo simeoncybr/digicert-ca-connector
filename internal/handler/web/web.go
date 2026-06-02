@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -102,6 +103,11 @@ func addPayloadEncryptionMiddleware(g *echo.Group) {
 			decrypted, err := object.Decrypt(pk)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusUnauthorized, "decryption failed")
+			}
+			// CWE-400: Limit decompressed JWE payload to 16 MiB to prevent decompression bombs
+			const maxDecryptedSize = 16 * 1024 * 1024
+			if len(decrypted) > maxDecryptedSize {
+				return errors.New("decrypted payload exceeds maximum allowed size")
 			}
 			req.Body = io.NopCloser(bytes.NewReader(decrypted))
 			return next(c)
