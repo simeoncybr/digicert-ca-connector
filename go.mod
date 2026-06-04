@@ -5,11 +5,11 @@ go 1.25.0
 require (
 	github.com/go-jose/go-jose/v4 v4.1.4
 	github.com/go-resty/resty/v2 v2.11.0
-	github.com/golang/mock v1.6.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/labstack/echo/v4 v4.11.3
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	go.uber.org/fx v1.20.1
+	go.uber.org/mock v0.6.0
 	go.uber.org/zap v1.26.0
 )
 
