@@ -3,6 +3,7 @@ module github.com/venafi/digicert-ca-connector
 go 1.25.0
 
 require (
+	github.com/go-jose/go-jose/v4 v4.1.4
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/golang/mock v1.6.0
 	github.com/jarcoal/httpmock v1.3.1
@@ -10,12 +11,10 @@ require (
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/fx v1.20.1
 	go.uber.org/zap v1.26.0
-	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
